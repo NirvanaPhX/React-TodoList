@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# To Do App
+
+## Description
 
 This is a simple to-do project developed using React and Bootstrap.
 Users can add a task, delete a task or mark a task as completed.
