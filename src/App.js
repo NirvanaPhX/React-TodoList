@@ -1,51 +1,21 @@
 import React from "react";
 import "./App.css";
-
-const todoList = [
-  {
-    id: 1,
-    title: "Assignment",
-    type: "Low",
-    desc: "Assignment due next Tuesday",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Lab Sign Off",
-    type: "Normal",
-    desc: "Lab Sign Off for Database next Monday",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Test",
-    type: "Urgent",
-    desc: "Operating System Test this Friday",
-    completed: false,
-  },
-  {
-    id: 4,
-    title: "INTP Blog",
-    type: "Urgent",
-    desc: "Write a blog post",
-    completed: true,
-  },
-];
-
-const types = ["Low", "Normal", "Urgent"];
+import { todoList, typeList } from "./data";
 
 class App extends React.Component {
   state = {
     todoList: todoList,
-    types: types,
+    types: typeList,
   };
 
+  // Delete a todo item
   deleteItem = (id) => {
     this.setState({
       todoList: this.state.todoList.filter((item) => item.id !== id),
     });
   };
 
+  // Add a todo item
   addItem = (newTodo) => {
     const newTodoList = [newTodo, ...this.state.todoList];
     this.setState({
@@ -53,6 +23,7 @@ class App extends React.Component {
     });
   };
 
+  // Mark a todo as completed
   completeTodo = (id) => {
     const todo = { ...this.state.todoList.filter((todo) => todo.id === id) }[0];
     const newTodo = { ...todo, completed: !todo.completed };
@@ -65,7 +36,10 @@ class App extends React.Component {
     });
   };
 
+  // Class component render. Render the UI.
   render() {
+    // console.log(this);
+
     return (
       <div className="container justify-content-md">
         <header>
@@ -73,7 +47,7 @@ class App extends React.Component {
             <u>To Do List</u>
           </h2>
         </header>
-        <Form types={types} addItem={this.addItem} />
+        <Form types={this.state.types} addItem={this.addItem} />
         <Progress todoList={this.state.todoList} />
         {this.state.todoList.map((todo) => (
           <TodoItem
@@ -87,69 +61,8 @@ class App extends React.Component {
     );
   }
 }
-
-class Progress extends React.Component {
-  render() {
-    const completeness = calcCompleteness(this.props.todoList);
-
-    return (
-      <>
-        <h3>Complete Percentage: </h3>
-        <div className="progress mb-5">
-          <div
-            className="progress-bar progress-bar-striped progress-bar-animated"
-            role="progressbar"
-            aria-valuenow={completeness}
-            aria-valuemin="0"
-            aria-valuemax="100"
-            style={{ width: `${completeness}%` }}
-          >
-            {this.props.todoList.length > 0
-              ? completeness + "%"
-              : "Nothing Left To Do"}
-          </div>
-        </div>
-      </>
-    );
-  }
-}
-
-class TodoItem extends React.Component {
-  handleDelete = (id) => {
-    return () => {
-      this.props.deleteItem(id);
-    };
-  };
-
-  render() {
-    const { id, type, title, desc, completed } = this.props;
-
-    return (
-      <div className={`card mb-3 border-${mapTypeToColor(type)}`}>
-        <div className={`card-header bg-${mapTypeToColor(type)}`}>
-          <div className="d-flex justify-content-between">
-            <div className="">{type}</div>
-            <button className="btn btn-dark" onClick={this.handleDelete(id)}>
-              X
-            </button>
-          </div>
-        </div>
-        <div className="card-body">
-          <h5 className="card-title">{title}</h5>
-          <p className="card-text text-secondary">{desc}</p>
-          <button
-            className="btn btn-success"
-            disabled={completed}
-            onClick={() => this.props.completeTodo(id)}
-          >
-            {completed ? "Completed" : "Not Completed"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-}
-
+// Form component
+// @description: Form to add a todo
 class Form extends React.Component {
   state = {
     formData: {
@@ -241,6 +154,76 @@ class Form extends React.Component {
   }
 }
 
+// Progress component
+// @description: Display a progress bar indicating the percentage of completed todos / total todos
+class Progress extends React.Component {
+  render() {
+    const completeness = calcCompleteness(this.props.todoList);
+
+    return (
+      <>
+        <h3>Complete Percentage: </h3>
+        <div className="progress mb-5">
+          <div
+            className="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            aria-valuenow={completeness}
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style={{ width: `${completeness}%` }}
+          >
+            {this.props.todoList.length > 0
+              ? completeness + "%"
+              : "Nothing Left To Do"}
+          </div>
+        </div>
+      </>
+    );
+  }
+}
+
+// TodoItem component
+// @description: One todo Item
+class TodoItem extends React.Component {
+  handleDelete = (id) => {
+    return () => {
+      this.props.deleteItem(id);
+    };
+  };
+
+  render() {
+    const { id, type, title, desc, completed } = this.props;
+
+    return (
+      <div className={`card mb-3 border-${mapTypeToColor(type)}`}>
+        <div className={`card-header bg-${mapTypeToColor(type)}`}>
+          <div className="d-flex justify-content-between">
+            <div className="">{type}</div>
+            <button className="btn btn-dark" onClick={this.handleDelete(id)}>
+              X
+            </button>
+          </div>
+        </div>
+        <div className="card-body">
+          <h5 className="card-title">{title}</h5>
+          <p className="card-text text-secondary">{desc}</p>
+          <button
+            className="btn btn-success"
+            disabled={completed}
+            onClick={() => this.props.completeTodo(id)}
+          >
+            {completed ? "Completed" : "Not Completed"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+/******************************* Utility Functions  *********************************/
+// Take in a type and return a string for Bootstrap color suffix
+// @param type A string in the types
+// @return a string
 function mapTypeToColor(type) {
   switch (type) {
     case "Low":
@@ -254,6 +237,9 @@ function mapTypeToColor(type) {
   }
 }
 
+// Calculate the percentage of completed todos in the list
+// @param todoList a list of todoItems, each todo item is an object with the property "completed"
+// @return number between 0 - 100
 function calcCompleteness(todoList) {
   let intialValue = 0;
   for (let i = 0; i < todoList.length; i++) {

@@ -30,5 +30,4 @@ This will install all the dependencies declared in the package.json file.
 
 Then you can simply use "npm start" to start the project.
 
-Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
